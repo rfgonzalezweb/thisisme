@@ -5,8 +5,23 @@ import { Link } from "react-router-dom";
 import "./App.css";
 import profiles from "./profiles.db";
 
+import { createClient } from "@supabase/supabase-js";
+import { useEffect } from "react";
+const { VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_URL } = import.meta.env;
+
+const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY);
+
 const App = () => {
   const firstProfile = profiles[0];
+
+  useEffect(() => {
+    getCountries();
+  }, []);
+
+  async function getCountries() {
+    const { data } = await supabase.from("profiles").select();
+    console.log({ data });
+  }
 
   return (
     <section>

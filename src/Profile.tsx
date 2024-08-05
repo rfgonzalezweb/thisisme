@@ -15,7 +15,7 @@ const Profile = () => {
       {profile.links.length > 0 && (
         <ul>
           {profile.links.map((link) => (
-            <li>
+            <li key={link.name}>
               <a target="_blank" href={link.url}>
                 {link.name}
               </a>
