@@ -1,9 +1,28 @@
+import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import profiles from "./profiles.db";
+const { VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_URL } = import.meta.env;
+
+const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY);
 
 const Profile = () => {
   const { handler } = useParams();
-  const profile = profiles.find((item) => item.handler === handler);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select(`bio,handler,name, links ( name, url)`)
+      .eq("handler", handler);
+    console.log({ data });
+    if (data && data[0]) {
+      setProfile(data[0]);
+    }
+  };
 
   if (!profile) return null;
 
@@ -11,6 +30,7 @@ const Profile = () => {
     <main>
       <h2>Hello, this is my profile.</h2>
       <h3>My name is {profile.name}</h3>
+      <h4>{profile.bio}</h4>
 
       {profile.links.length > 0 && (
         <ul>
