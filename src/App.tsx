@@ -1,12 +1,28 @@
 // Libs
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // Deps
 import "./App.css";
-import profiles from "./profiles.db";
+import supabase from "./supabaseClient";
 
 const App = () => {
-  const firstProfile = profiles[0];
+  const [profiles, setProfiles] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select(`bio,handler,name`);
+
+    console.log({ data });
+    if (data) {
+      setProfiles(data);
+    }
+  };
 
   return (
     <section>
@@ -14,7 +30,9 @@ const App = () => {
       <h2>The Public Profiles Platform</h2>
       <h3>Wanna see somebody's profile?</h3>
 
-      <Link to={`/${firstProfile.handler}`}>{firstProfile.name}</Link>
+      {profiles.map((profile) => (
+        <Link to={`/${profile.handler}`}>{profile.name} - {profile.bio}</Link>
+      ))}
     </section>
   );
 };
